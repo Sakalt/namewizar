@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名前生成サイト</title>
+    <title>namewizar</title>
     <style>
         /* CSSのスタイル */
         body {
@@ -18,11 +18,18 @@
         }
 
         .container {
+            display: flex;
             background-color: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        .input-section, .result-section {
+            width: 50%;
+            padding: 10px;
         }
 
         h1 {
@@ -67,64 +74,76 @@
             margin-top: 20px;
             font-size: 16px;
             color: #333;
-            text-align: center;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>名前生成サイト</h1>
-        <div class="input-group">
-            <label for="genre">ジャンル:</label>
-            <select id="genre">
-                <option value="">指定しない</option>
-                <option value="中国風">中国風</option>
-                <option value="ファンタジー風">ファンタジー風</option>
-                <option value="日本風">日本風</option>
-                <option value="ヨーロッパ風">ヨーロッパ風</option>
-                <option value="アフリカ風">アフリカ風</option>
-            </select>
+        <!-- 入力セクション -->
+        <div class="input-section">
+            <h1>名前生成サイト</h1>
+            <div class="input-group">
+                <label for="genre">ジャンル:</label>
+                <select id="genre">
+                    <option value="">指定しない</option>
+                    <option value="中国風">中国風</option>
+                    <option value="ファンタジー風">ファンタジー風</option>
+                    <option value="日本風">日本風</option>
+                    <option value="ヨーロッパ風">ヨーロッパ風</option>
+                    <option value="アフリカ風">アフリカ風</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="length">長さ:</label>
+                <select id="length">
+                    <option value="">指定しない</option>
+                    <option value="短い">短い</option>
+                    <option value="中くらい">中くらい</option>
+                    <option value="長い">長い</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="startLetter">最初の文字:</label>
+                <input type="text" id="startLetter" placeholder="例: A">
+            </div>
+            <div class="input-group">
+                <label for="endLetter">最後の文字:</label>
+                <input type="text" id="endLetter" placeholder="例: Z">
+            </div>
+            <div class="input-group">
+                <label for="worldView">世界観:</label>
+                <input type="text" id="worldView" placeholder="例: ファンタジー、近未来">
+            </div>
+            <div class="input-group">
+                <label for="characterGender">キャラの性別:</label>
+                <input type="text" id="characterGender" placeholder="例: 男性、女性、その他">
+            </div>
+            <div class="input-group">
+                <label for="personality">個性:</label>
+                <input type="text" id="personality" placeholder="例: 勇敢、冷静">
+            </div>
+            <div class="input-group">
+                <label for="customOptions">カスタムオプション:</label>
+                <textarea id="customOptions" rows="3" placeholder="特定の要望や詳細を入力してください"></textarea>
+            </div>
+            <button id="generateButton">名前を生成</button>
         </div>
-        <div class="input-group">
-            <label for="length">長さ:</label>
-            <select id="length">
-                <option value="">指定しない</option>
-                <option value="短い">短い</option>
-                <option value="中くらい">中くらい</option>
-                <option value="長い">長い</option>
-            </select>
+
+        <!-- 結果セクション -->
+        <div class="result-section">
+            <div id="result" class="result"></div>
+            <div class="input-group">
+                <label for="modificationRequest">修正依頼:</label>
+                <textarea id="modificationRequest" rows="3" placeholder="AIに依頼したい修正内容を入力してください"></textarea>
+            </div>
+            <button id="modifyButton">修正を依頼</button>
         </div>
-        <div class="input-group">
-            <label for="startLetter">最初の文字:</label>
-            <input type="text" id="startLetter" placeholder="例: A">
-        </div>
-        <div class="input-group">
-            <label for="endLetter">最後の文字:</label>
-            <input type="text" id="endLetter" placeholder="例: Z">
-        </div>
-        <div class="input-group">
-            <label for="worldView">世界観:</label>
-            <input type="text" id="worldView" placeholder="例: ファンタジー、近未来">
-        </div>
-        <div class="input-group">
-            <label for="characterGender">キャラの性別:</label>
-            <input type="text" id="characterGender" placeholder="例: 男性、女性、その他">
-        </div>
-        <div class="input-group">
-            <label for="personality">個性:</label>
-            <input type="text" id="personality" placeholder="例: 勇敢、冷静">
-        </div>
-        <div class="input-group">
-            <label for="customOptions">カスタムオプション:</label>
-            <textarea id="customOptions" rows="3" placeholder="特定の要望や詳細を入力してください"></textarea>
-        </div>
-        <button id="generateButton">名前を生成</button>
-        <div id="result" class="result"></div>
-        <div class="input-group">
-            <label for="modificationRequest">修正依頼:</label>
-            <textarea id="modificationRequest" rows="3" placeholder="AIに依頼したい修正内容を入力してください"></textarea>
-        </div>
-        <button id="modifyButton">修正を依頼</button>
     </div>
 
     <script>
@@ -147,7 +166,7 @@
                 // AIへのプロンプト生成
                 let prompt = '';
                 if (genre) prompt += `${genre}風の`;
-                prompt += '名前を作成してください。';
+                prompt += '名前を3つ作成してください。';
                 if (length) prompt += `長さは${length}で、`;
                 if (startLetter) prompt += `「${startLetter}」から始まり、`;
                 if (endLetter) prompt += `「${endLetter}」で終わります。`;
@@ -155,12 +174,12 @@
                 if (characterGender) prompt += `キャラの性別は「${characterGender}」で、`;
                 if (personality) prompt += `個性は「${personality}」です。`;
                 if (customOptions) prompt += `${customOptions}。`;
-                prompt += '由来もつけてください。';
+                prompt += '理由はそれぞれ20〜30文字におさめてください。';
 
                 // APIにリクエストを送信
                 const response = await sendRequest(prompt);
                 if (response) {
-                    resultDiv.textContent = response.bestResponse?.utterance || '応答がありません';
+                    displayResults(response.bestResponse?.utterance || '応答がありません');
                 } else {
                     resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
                 }
@@ -179,7 +198,7 @@
                 // APIにリクエストを送信
                 const response = await sendRequest(prompt);
                 if (response) {
-                    resultDiv.textContent = response.bestResponse?.utterance || '応答がありません';
+                    displayResults(response.bestResponse?.utterance || '応答がありません');
                 } else {
                     resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
                 }
@@ -219,6 +238,17 @@
                     console.error('フェッチエラー:', error);
                     return null;
                 }
+            }
+
+            function displayResults(resultText) {
+                resultDiv.innerHTML = ''; // 既存の結果をクリア
+                const resultItems = resultText.split('\n').map(item => item.trim()).filter(item => item);
+                resultItems.forEach((item, index) => {
+                    const resultItemDiv = document.createElement('div');
+                    resultItemDiv.classList.add('result-item');
+                    resultItemDiv.textContent = `結果${index + 1}: ${item}`;
+                    resultDiv.appendChild(resultItemDiv);
+                });
             }
         });
     </script>
