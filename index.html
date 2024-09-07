@@ -22,7 +22,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 350px;
         }
 
         h1 {
@@ -40,7 +40,8 @@
         }
 
         .input-group input,
-        .input-group select {
+        .input-group select,
+        .input-group textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -101,14 +102,36 @@
             <label for="endLetter">最後の文字:</label>
             <input type="text" id="endLetter" placeholder="例: Z">
         </div>
+        <div class="input-group">
+            <label for="worldView">世界観:</label>
+            <input type="text" id="worldView" placeholder="例: ファンタジー、近未来">
+        </div>
+        <div class="input-group">
+            <label for="characterGender">キャラの性別:</label>
+            <input type="text" id="characterGender" placeholder="例: 男性、女性、その他">
+        </div>
+        <div class="input-group">
+            <label for="personality">個性:</label>
+            <input type="text" id="personality" placeholder="例: 勇敢、冷静">
+        </div>
+        <div class="input-group">
+            <label for="customOptions">カスタムオプション:</label>
+            <textarea id="customOptions" rows="3" placeholder="特定の要望や詳細を入力してください"></textarea>
+        </div>
         <button id="generateButton">名前を生成</button>
         <div id="result" class="result"></div>
+        <div class="input-group">
+            <label for="modificationRequest">修正依頼:</label>
+            <textarea id="modificationRequest" rows="3" placeholder="AIに依頼したい修正内容を入力してください"></textarea>
+        </div>
+        <button id="modifyButton">修正を依頼</button>
     </div>
 
     <script>
         // JavaScriptのコード
         document.addEventListener('DOMContentLoaded', () => {
             const generateButton = document.getElementById('generateButton');
+            const modifyButton = document.getElementById('modifyButton');
             const resultDiv = document.getElementById('result');
 
             generateButton.addEventListener('click', async function () {
@@ -116,6 +139,10 @@
                 const length = document.getElementById('length').value;
                 const startLetter = document.getElementById('startLetter').value.trim();
                 const endLetter = document.getElementById('endLetter').value.trim();
+                const worldView = document.getElementById('worldView').value.trim();
+                const characterGender = document.getElementById('characterGender').value.trim();
+                const personality = document.getElementById('personality').value.trim();
+                const customOptions = document.getElementById('customOptions').value.trim();
 
                 // AIへのプロンプト生成
                 let prompt = '';
@@ -124,7 +151,30 @@
                 if (length) prompt += `長さは${length}で、`;
                 if (startLetter) prompt += `「${startLetter}」から始まり、`;
                 if (endLetter) prompt += `「${endLetter}」で終わります。`;
+                if (worldView) prompt += `世界観は「${worldView}」で、`;
+                if (characterGender) prompt += `キャラの性別は「${characterGender}」で、`;
+                if (personality) prompt += `個性は「${personality}」です。`;
+                if (customOptions) prompt += `${customOptions}。`;
                 prompt += '由来もつけてください。';
+
+                // APIにリクエストを送信
+                const response = await sendRequest(prompt);
+                if (response) {
+                    resultDiv.textContent = response.bestResponse?.utterance || '応答がありません';
+                } else {
+                    resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
+                }
+            });
+
+            modifyButton.addEventListener('click', async function () {
+                const modificationRequest = document.getElementById('modificationRequest').value.trim();
+                if (!modificationRequest) {
+                    alert('修正依頼内容を入力してください。');
+                    return;
+                }
+
+                // 修正依頼プロンプトの生成
+                const prompt = `次の内容で修正を行ってください: ${modificationRequest}`;
 
                 // APIにリクエストを送信
                 const response = await sendRequest(prompt);
