@@ -147,6 +147,11 @@
 
             generateButton.addEventListener('click', async function () {
                 const apiKey = document.getElementById('apiKey').value.trim();
+                if (!apiKey) {
+                    resultDiv.textContent = 'APIキーを入力してください。';
+                    return;
+                }
+
                 const genre = document.getElementById('genre').value;
                 const length = document.getElementById('length').value;
                 const startLetter = document.getElementById('startLetter').value.trim();
@@ -169,29 +174,25 @@
                 prompt += '理由はそれぞれ20〜30文字におさめてください。';
 
                 const response = await sendRequest(apiKey, prompt);
-                if (response) {
-                    displayResults(response.choices[0]?.text || '応答がありません');
-                } else {
-                    resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
-                }
+                displayResults(response);
             });
 
             modifyButton.addEventListener('click', async function () {
                 const apiKey = document.getElementById('apiKey').value.trim();
+                if (!apiKey) {
+                    resultDiv.textContent = 'APIキーを入力してください。';
+                    return;
+                }
+
                 const modificationRequest = document.getElementById('modificationRequest').value.trim();
                 if (!modificationRequest) {
-                    alert('修正依頼内容を入力してください。');
+                    resultDiv.textContent = '修正依頼内容を入力してください。';
                     return;
                 }
 
                 const prompt = `次の内容で修正を行ってください: ${modificationRequest}`;
-
                 const response = await sendRequest(apiKey, prompt);
-                if (response) {
-                    displayResults(response.choices[0]?.text || '応答がありません');
-                } else {
-                    resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
-                }
+                displayResults(response);
             });
 
             async function sendRequest(apiKey, prompt) {
@@ -201,35 +202,30 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            prompt: prompt,
-                            max_tokens: 100,
-                        })
+                        body: JSON.stringify({ prompt })
                     });
 
                     if (!response.ok) {
-                        const errorText = await response.text();
-                        return { error: `ネットワーク応答が正常ではありません: ${response.status} ${errorText}` };
+                        return { error: `ネットワーク応答が正常ではありません: ${response.status}` };
                     }
 
-                    const text = await response.text();
-                    try {
-                        const data = JSON.parse(text);
-                        return data;
-                    } catch (e) {
-                        return { error: `JSONのパースエラー: ${e.message}` };
+                    const data = await response.json();
+                    if (data.error) {
+                        return { error: `APIエラー: ${data.error.message}` };
                     }
+
+                    return data.response || { error: '応答がありません' };
                 } catch (error) {
                     return { error: `フェッチエラー: ${error.message}` };
                 }
             }
 
-            function displayResults(resultText) {
+            function displayResults(result) {
                 resultDiv.innerHTML = '';
-                if (resultText.error) {
-                    resultDiv.textContent = resultText.error;
+                if (result.error) {
+                    resultDiv.textContent = result.error;
                 } else {
-                    const resultItems = resultText.split('\n').map(item => item.trim()).filter(item => item);
+                    const resultItems = result.split('\n').map(item => item.trim()).filter(item => item);
                     resultItems.forEach((item, index) => {
                         const resultItemDiv = document.createElement('div');
                         resultItemDiv.classList.add('result-item');
