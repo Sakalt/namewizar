@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名前生成サイト</title>
     <style>
-        /* CSSのスタイル */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
@@ -16,7 +15,6 @@
             align-items: center;
             height: 100vh;
         }
-
         .container {
             display: flex;
             background-color: white;
@@ -26,26 +24,21 @@
             width: 80%;
             max-width: 1000px;
         }
-
         .input-section, .result-section {
             width: 50%;
             padding: 10px;
         }
-
         h1 {
             font-size: 20px;
             text-align: center;
         }
-
         .input-group {
             margin-bottom: 15px;
         }
-
         .input-group label {
             display: block;
             margin-bottom: 5px;
         }
-
         .input-group input,
         .input-group select,
         .input-group textarea {
@@ -54,7 +47,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-
         button {
             width: 100%;
             padding: 10px;
@@ -65,17 +57,14 @@
             cursor: pointer;
             font-size: 16px;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         .result {
             margin-top: 20px;
             font-size: 16px;
             color: #333;
         }
-
         .result-item {
             margin-bottom: 15px;
             border-bottom: 1px solid #ddd;
@@ -90,7 +79,7 @@
             <h1>名前生成サイト</h1>
             <div class="input-group">
                 <label for="apiKey">APIキー:</label>
-                <input type="text" id="apiKey" placeholder="APIキーを入力してください">
+                <input type="text" id="apiKey" placeholder="APIキーを入力">
             </div>
             <div class="input-group">
                 <label for="genre">ジャンル:</label>
@@ -167,12 +156,6 @@
                 const personality = document.getElementById('personality').value.trim();
                 const customOptions = document.getElementById('customOptions').value.trim();
 
-                if (!apiKey) {
-                    alert('APIキーを入力してください。');
-                    return;
-                }
-
-                // AIへのプロンプト生成
                 let prompt = '';
                 if (genre) prompt += `${genre}風の`;
                 prompt += '名前を3つ作成してください。';
@@ -185,10 +168,9 @@
                 if (customOptions) prompt += `${customOptions}。`;
                 prompt += '理由はそれぞれ20〜30文字におさめてください。';
 
-                // APIにリクエストを送信
                 const response = await sendRequest(apiKey, prompt);
                 if (response) {
-                    displayResults(response.generatedText || '応答がありません');
+                    displayResults(response.choices[0]?.text || '応答がありません');
                 } else {
                     resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
                 }
@@ -197,22 +179,16 @@
             modifyButton.addEventListener('click', async function () {
                 const apiKey = document.getElementById('apiKey').value.trim();
                 const modificationRequest = document.getElementById('modificationRequest').value.trim();
-                if (!apiKey) {
-                    alert('APIキーを入力してください。');
-                    return;
-                }
                 if (!modificationRequest) {
                     alert('修正依頼内容を入力してください。');
                     return;
                 }
 
-                // 修正依頼プロンプトの生成
                 const prompt = `次の内容で修正を行ってください: ${modificationRequest}`;
 
-                // APIにリクエストを送信
                 const response = await sendRequest(apiKey, prompt);
                 if (response) {
-                    displayResults(response.generatedText || '応答がありません');
+                    displayResults(response.choices[0]?.text || '応答がありません');
                 } else {
                     resultDiv.textContent = '申し訳ありませんが、何か問題が発生しました。後で再試行してください。';
                 }
@@ -227,30 +203,39 @@
                         },
                         body: JSON.stringify({
                             prompt: prompt,
-                            maxOutputTokens: 50,  // 適切な値に調整してください
-                        }),
+                            max_tokens: 100,
+                        })
                     });
 
-                    const data = await response.json();
-                    return data;
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        return { error: `ネットワーク応答が正常ではありません: ${response.status} ${errorText}` };
+                    }
+
+                    const text = await response.text();
+                    try {
+                        const data = JSON.parse(text);
+                        return data;
+                    } catch (e) {
+                        return { error: `JSONのパースエラー: ${e.message}` };
+                    }
                 } catch (error) {
-                    console.error('Error:', error);
-                    return null;
+                    return { error: `フェッチエラー: ${error.message}` };
                 }
             }
 
-            function displayResults(results) {
+            function displayResults(resultText) {
                 resultDiv.innerHTML = '';
-                if (typeof results === 'string') {
-                    const items = results.split('\n').map(item => item.trim()).filter(item => item);
-                    items.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'result-item';
-                        div.textContent = item;
-                        resultDiv.appendChild(div);
-                    });
+                if (resultText.error) {
+                    resultDiv.textContent = resultText.error;
                 } else {
-                    resultDiv.textContent = '応答がありません';
+                    const resultItems = resultText.split('\n').map(item => item.trim()).filter(item => item);
+                    resultItems.forEach((item, index) => {
+                        const resultItemDiv = document.createElement('div');
+                        resultItemDiv.classList.add('result-item');
+                        resultItemDiv.textContent = `結果${index + 1}: ${item}`;
+                        resultDiv.appendChild(resultItemDiv);
+                    });
                 }
             }
         });
