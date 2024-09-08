@@ -3,4 +3,4 @@
 [こちらから](https://namewizar.vercel.app/2.html)
 https://chatgpt.com
 都合上@sakalt(ingushe)しか使用してはいけません。
-https://mebo.dev
+https://miibo.dev
