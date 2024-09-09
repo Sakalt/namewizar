@@ -206,10 +206,13 @@
                 });
 
                 if (!response.ok) {
+                    alert(`ネットワーク応答が正常ではありません: ${response.status}`);
                     return { error: `ネットワーク応答が正常ではありません: ${response.status}` };
                 }
 
                 const data = await response.json();
+                alert('API応答: ' + JSON.stringify(data)); // デバッグ用
+
                 if (data.error) {
                     return { error: `APIエラー: ${data.error.message}` };
                 }
@@ -220,6 +223,7 @@
                     return { error: '応答がありません' };
                 }
             } catch (error) {
+                alert(`フェッチエラー: ${error.message}`); // デバッグ用
                 return { error: `フェッチエラー: ${error.message}` };
             }
         }
