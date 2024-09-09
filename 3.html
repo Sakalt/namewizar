@@ -211,19 +211,16 @@
                 }
 
                 const data = await response.json();
-                alert('API応答: ' + JSON.stringify(data)); // デバッグ用
+                console.log('API応答:', data); // デバッグ用
 
                 if (data.error) {
+                    alert(`APIエラー: ${data.error.message}`);
                     return { error: `APIエラー: ${data.error.message}` };
                 }
 
-                if (data.response) {
-                    return data.response;
-                } else {
-                    return { error: '応答がありません' };
-                }
+                return data.response || { error: '応答がありません' };
             } catch (error) {
-                alert(`フェッチエラー: ${error.message}`); // デバッグ用
+                alert(`フェッチエラー: ${error.message}`); // エラーハンドリング
                 return { error: `フェッチエラー: ${error.message}` };
             }
         }
